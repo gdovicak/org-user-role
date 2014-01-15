@@ -16,3 +16,23 @@ var Organization = (function(){
 
   return Organization;
 })();
+
+var User = (function(){
+  function User(){
+    var _this = this;
+    _this.deniedOrgs = [];
+
+    _this.hasAccessTo = function(orgName){
+      var access = true;
+
+      $(_this.deniedOrgs).each(function(){
+        if (this == orgName)
+          access = false;
+      });
+
+      return access;
+    };
+  }
+
+  return User;
+})();
