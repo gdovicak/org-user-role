@@ -47,3 +47,23 @@ var User = (function(){
 
   return User;
 })();
+
+var Organization = (function(){
+  function Organization(orgName, parent){
+    var _this = this;
+    _this.orgName = orgName,
+    _this.parent = parent;
+  };
+  return Organization;
+})();
+
+var UserOrg = (function(){
+  function UserOrg(orgName, role, parent, userId){
+    var _this = this;
+    _this.userId = 1;
+    _this.orgName = orgName;
+    _this.role = role;
+    _this.parent = parent;
+  };
+  
+})();
