@@ -23,13 +23,15 @@ var User = (function(){
 
     function init(orgs){
       $(orgs).each(function(){
-        if(this.role != 'Denied')
         _this.allowedOrgs[this.orgName] = this;
       });
     };
 
     _this.getRoleFor = function(org){
-      var role = _this.allowedOrgs[org.orgName] ? _this.allowedOrgs[org.orgName].role  : 'Denied';
+      if(isSpecificallyDenied(org)) 
+        return 'Denied';
+
+      var role = isSpecificallyAllowed(org);
       
       if(role == 'Denied'){
         role = (_this.allowedOrgs[org.parent]) ? _this.allowedOrgs[org.parent].role : 'Denied';
@@ -41,9 +43,20 @@ var User = (function(){
 
       return role;
     };
+    
+    var isSpecificallyDenied = function(org){
+      return (_this.allowedOrgs[org.orgName] && _this.allowedOrgs[org.orgName].role == 'Denied');
+    };
+
+    var isSpecificallyAllowed = function(org){
+      return _this.allowedOrgs[org.orgName] ? _this.allowedOrgs[org.orgName].role  : 'Denied';
+    }
+
 
     init(userOrgMap);
   }
+
+  
 
   return User;
 })();

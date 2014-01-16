@@ -50,39 +50,64 @@ describe("User should", function(){
 
       expect(user.getRoleFor(childOrg)).toEqual('User');
     });
+
+  });
+
+  describe("inherit rolls for multiple children", function(){
+    var child1 = null, 
+        child2 = null;
+
+    beforeEach(function(){
+      child1 = new Organization('Child 1', 'Org 2');
+      child2 = new Organization('Child 2', 'Org 2');
+    });
+
+    it("when parent has user role", function(){
+      var userOrg = new UserOrg('Org 2', 'User', 'Root Org');
+      var user = new User([userOrg]);
+
+      expect(user.getRoleFor(child1)).toEqual('User'); 
+      expect(user.getRoleFor(child2)).toEqual('User'); 
+    });
+
+    it("when 'Root Org' has user role", function(){
+      var userOrg = new UserOrg('Root Org', 'User', null);
+      var user = new User([userOrg]);
+
+     expect(user.getRoleFor(child1)).toEqual('User'); 
+     expect(user.getRoleFor(child2)).toEqual('User'); 
+    });
+
+    it("unless org is specifically denied", function(){
+      var userOrg = new UserOrg('Root Org', 'User', null);
+      var deniedUserOrg = new UserOrg('Child 2', 'Denied',  'Org 2');
+      var user = new User([userOrg, deniedUserOrg]);
+
+      expect(user.getRoleFor(child1)).toEqual('User'); 
+      expect(user.getRoleFor(child2)).toEqual('Denied'); 
+    });
   });
 
  describe("have 'Denied' role given she", function(){ 
-  it("has denied role for that org", function(){
-    var userOrg = new Organization('Org 1','Root Org');
-    user = new User([userOrg]);
-    expect(user.getRoleFor('Org 1')).toEqual('Denied');
-  });
-
-  it("does not have any role for an org", function(){
-    var userOrg = new Organization('Org 1','Denied');
-    user = new User([]);
-    expect(user.getRoleFor(userOrg)).toEqual('Denied');
-  });
-
-  it("has a denied role for the parent org", function(){
-      var userOrg = new UserOrg('Org 1', 'Denied', 'Root Org');
-      var childOrg = new Organization('Child Org 1', 'Org 1');
-
+    it("has denied role for that org", function(){
+      var userOrg = new Organization('Org 1','Root Org');
       user = new User([userOrg]);
-      expect(user.getRoleFor(childOrg)).toEqual('Denied');
-  });
+      expect(user.getRoleFor('Org 1')).toEqual('Denied');
+    });
 
-  it("does not have a roll for the parent", function(){
+    it("does not have any role for an org", function(){
+      var userOrg = new Organization('Org 1','Denied');
+      user = new User([]);
+      expect(user.getRoleFor(userOrg)).toEqual('Denied');
+    });
 
-  });
+    it("has a denied role for the parent org", function(){
+        var userOrg = new UserOrg('Org 1', 'Denied', 'Root Org');
+        var childOrg = new Organization('Child Org 1', 'Org 1');
 
-  //it("has a denied role for the root org and no overriding role to parent org", function(){
-
-  //});
-
-  //does not have any role for parent org
-  //is admin of root and denied parent org
+        user = new User([userOrg]);
+        expect(user.getRoleFor(childOrg)).toEqual('Denied');
+    });
   });
 });
 
