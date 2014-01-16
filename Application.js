@@ -1,37 +1,48 @@
-var Application = (function(){
-  function Application(){
-  var _this = this;
-  _this.rootOrganization = {};
-  
-}
- return Application; 
-})();
-
-var Organization = (function(){
-  function Organization(dataObj){
-    var _this = this;
-    _this.parent = null,
-    _this.isRoot = dataObj.parent ? false : true;
-  };
-
-  return Organization;
-})();
+//Data Structure
+//var orgMap = {
+//   userid: 1,
+//   orgId: 'blah',
+//   role: 'Admin'
+// }
+//
+// var org = {
+//   'name': 'org 1',
+//   'parent': 'Root Org',
+//   }
+//
+//var usr = {
+// 'id': 1,
+// 'name': 'Ben'
+// }
 
 var User = (function(){
-  function User(){
+  function User(userOrgMap){
     var _this = this;
-    _this.deniedOrgs = [];
+    _this.id = 1,
+    _this.allowedOrgs = {};
 
-    _this.hasAccessTo = function(orgName){
-      var access = true;
-
-      $(_this.deniedOrgs).each(function(){
-        if (this == orgName)
-          access = false;
+    function init(orgs){
+      $(orgs).each(function(){
+        if(this.role != 'Denied')
+        _this.allowedOrgs[this.orgName] = this;
       });
-
-      return access;
     };
+
+    _this.getRoleFor = function(org){
+      var role = _this.allowedOrgs[org.orgName] ? _this.allowedOrgs[org.orgName].role  : 'Denied';
+      
+      if(role == 'Denied'){
+        role = (_this.allowedOrgs[org.parent]) ? _this.allowedOrgs[org.parent].role : 'Denied';
+      }
+      
+      if(role == 'Denied'){
+        role = (_this.allowedOrgs['Root Org']) ? _this.allowedOrgs['Root Org'].role : 'Denied';
+      }
+
+      return role;
+    };
+
+    init(userOrgMap);
   }
 
   return User;
