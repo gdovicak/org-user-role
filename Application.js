@@ -65,5 +65,5 @@ var UserOrg = (function(){
     _this.role = role;
     _this.parent = parent;
   };
-  
+ return UserOrg; 
 })();

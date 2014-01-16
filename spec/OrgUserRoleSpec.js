@@ -6,23 +6,23 @@ describe("User should", function(){
 
   describe("have 'Admin' role for org given she has 'Admin' role for", function(){
     it("the organization", function(){
-      var orgMap = {'name': 'Org 1', 'parent': 'Root Org', role: 'Admin'};
+      var orgMap = new UserOrg('Org 1', 'Admin', 'Root Org');
       user = new User([orgMap]);
       expect(user.getRoleFor(orgMap)).toEqual('Admin');
     });
     
     it("'Root Org' and not denied role for org", function(){
-      var rootOrg= {'name': 'Root Org', role: 'Admin', parent: null};
-      var org = {'name': 'Org 1', 'parent': 'Root Org', role: 'User'};
+      var rootOrg = new UserOrg('Root Org', 'Admin', null);
+      var org = new Organization('Org 1', 'Root Org');
       user = new User([rootOrg]);
 
       expect(user.getRoleFor(org)).toEqual('Admin');
     });
     
     it("parent org and not denied role for child org", function(){
-      var orgOne = {orgName: 'Org 1', role: 'Admin', parent: 'Root Org'};
-      var childOrg = {orgName: 'Child Org 1', 'parent': 'Org 1'};
-      user = new User([orgOne]);
+      var userOrg = new UserOrg('Org 1', 'Admin', 'Root Org');
+      var childOrg = new Organization('Child Org 1','Org 1');
+      user = new User([userOrg]);
 
       expect(user.getRoleFor(childOrg)).toEqual('Admin');
     });
@@ -30,9 +30,9 @@ describe("User should", function(){
 
   describe("have 'User' role for org given she has 'User' role for", function(){
     it("the organization", function(){
-      org1Name = {orgName: 'Org 1', role: 'User', parent: 'Root Org'},
-      user = new User([org1Name]);
-      expect(user.getRoleFor(org1Name)).toEqual('User');
+      var userOrg = {orgName: 'Org 1', role: 'User', parent: 'Root Org'},
+      user = new User([userOrg]);
+      expect(user.getRoleFor(userOrg)).toEqual('User');
     });
 
     it("the parent org and not denied role for org", function(){
@@ -44,9 +44,9 @@ describe("User should", function(){
     });
 
     it("the root org and not denied role for org", function(){
-      var orgOne = {orgName: 'Org 1', role: 'User', parent: 'Root Org'};
+      var userOrg = new UserOrg('Org 1', 'User', 'Root Org');
       var childOrg = new Organization('Child Org 1', 'Org 1');
-      user = new User([orgOne]);
+      user = new User([userOrg]);
 
       expect(user.getRoleFor(childOrg)).toEqual('User');
     });
@@ -54,22 +54,22 @@ describe("User should", function(){
 
  describe("have 'Denied' role given she", function(){ 
   it("has denied role for that org", function(){
-    var userOrg = {orgName: org1Name, role: 'Denied'};
+    var userOrg = new Organization('Org 1','Root Org');
     user = new User([userOrg]);
-    expect(user.getRoleFor(org1Name)).toEqual('Denied');
+    expect(user.getRoleFor('Org 1')).toEqual('Denied');
   });
 
   it("does not have any role for an org", function(){
-    var userOrg = {orgName: org1Name, role: 'Denied'};
+    var userOrg = new Organization('Org 1','Denied');
     user = new User([]);
     expect(user.getRoleFor(userOrg)).toEqual('Denied');
   });
 
   it("has a denied role for the parent org", function(){
-      var orgOne = { orgName: 'Org 1', role: 'Denied', parent: 'Root Org'};
+      var userOrg = new UserOrg('Org 1', 'Denied', 'Root Org');
       var childOrg = new Organization('Child Org 1', 'Org 1');
-      user = new User([orgOne]);
 
+      user = new User([userOrg]);
       expect(user.getRoleFor(childOrg)).toEqual('Denied');
   });
 
