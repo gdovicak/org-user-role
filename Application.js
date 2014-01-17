@@ -31,15 +31,13 @@ var User = (function(){
       if(isSpecificallyDenied(org)) 
         return 'Denied';
 
-      var role = isSpecificallyAllowed(org);
+      var role = getExplicitlyAllowed(org);
       
-      if(role == 'Denied'){
-        role = (_this.allowedOrgs[org.parent]) ? _this.allowedOrgs[org.parent].role : 'Denied';
-      }
+      if(role == 'Denied')
+        role =  inheritRoleFromParent(org);
       
-      if(role == 'Denied'){
-        role = (_this.allowedOrgs['Root Org']) ? _this.allowedOrgs['Root Org'].role : 'Denied';
-      }
+      if(role == 'Denied')
+        role = inhertiRoleFromRoot(org);
 
       return role;
     };
@@ -48,10 +46,17 @@ var User = (function(){
       return (_this.allowedOrgs[org.orgName] && _this.allowedOrgs[org.orgName].role == 'Denied');
     };
 
-    var isSpecificallyAllowed = function(org){
+    var getExplicitlyAllowed = function(org){
       return _this.allowedOrgs[org.orgName] ? _this.allowedOrgs[org.orgName].role  : 'Denied';
     }
 
+    var inheritRoleFromParent = function(org){
+      return (_this.allowedOrgs[org.parent]) ? _this.allowedOrgs[org.parent].role : 'Denied';
+    };
+
+    var inhertiRoleFromRoot = function(org){
+      return (_this.allowedOrgs['Root Org']) ? _this.allowedOrgs['Root Org'].role : 'Denied'; 
+    }
 
     init(userOrgMap);
   }
