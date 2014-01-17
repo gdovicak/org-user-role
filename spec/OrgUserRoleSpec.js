@@ -109,11 +109,4 @@ describe("User should", function(){
       expect(user.getRoleFor(child2)).toEqual('Denied'); 
     });
   });
-
-
-
 });
-
-
-
-

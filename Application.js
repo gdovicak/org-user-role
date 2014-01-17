@@ -21,7 +21,7 @@ var User = (function(){
     _this.id = 1,
     _this.allowedOrgs = {};
 
-    function init(orgs){
+    _this.loadOrgs = function(orgs){
       $(orgs).each(function(){
         _this.allowedOrgs[this.orgName] = this;
       });
@@ -58,10 +58,8 @@ var User = (function(){
       return (_this.allowedOrgs['Root Org']) ? _this.allowedOrgs['Root Org'].role : 'Denied'; 
     }
 
-    init(userOrgMap);
+    _this.loadOrgs(userOrgMap);
   }
-
-  
 
   return User;
 })();
@@ -84,4 +82,25 @@ var UserOrg = (function(){
     _this.parent = parent;
   };
  return UserOrg; 
+})();
+
+var Application = (function(){
+  function Application(dataCalls, user){
+    var _this = this;
+    _this.dataCalls = dataCalls,
+    _this.user = user,
+    _this.orgToValidate = new Organization('Org 1', 'Root Org');
+
+    _this.run = function(){
+      var orgProm = _this.dataCalls.getOrgRolesForUser(user.id);
+
+      orgProm.done(function(orgs){
+        _this.user.loadOrgs(orgs);
+        console.log(_this.user.getRoleFor(_this.orgToValidate));
+      });
+    }
+
+  }
+
+  return Application;
 })();
